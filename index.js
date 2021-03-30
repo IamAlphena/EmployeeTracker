@@ -9,7 +9,7 @@ init()
 
 //async to control timing
 async function init() {
-    set up to await the answers
+    // set up to await the answers
     const { whatToDo } = await inquirer.prompt({
         name: "whatToDo",
         type: "list",
