@@ -25,3 +25,18 @@ CREATE TABLE employeerole (
   department_id INT NOT NULL
   PRIMARY KEY (id)
 );
+
+
+
+SELECT * FROM department;
+SELECT * FROM employee;
+SELECT * FROM employeerole;
+
+SELECT first_name, last_name, role_name
+FROM employee INNER JOIN employeerole
+ON employee.role_id = employeerole.id;
+
+SELECT role_name, dept_name
+FROM employeerole INNER JOIN department
+ON employeerole.department_id = department.id;
+

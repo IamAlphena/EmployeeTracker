@@ -2,7 +2,7 @@
 const connection = require("./db");
 const inquirer = require("inquirer");
 
-const viewEmployee = require("./lib/viewEmployee");
+// const viewEmployee = require("./lib/viewEmployee");
 
 //start app
 init()
@@ -21,7 +21,8 @@ async function init() {
     switch (whatToDo) {
         case "View All Employees":
             //display table of all employees
-            // console.table()
+            console.table(employee)
+            init()
             break
         case "View All Employees by Department":
             //display table all employees in a department 
