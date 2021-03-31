@@ -201,7 +201,6 @@ function updateEmployee() {
             }
         ])
             .then((answers) => {
-                console.log(answers)
                 let role_id = "";
                 for (i = 0; i < data.length; i++) {
                     if (answers.roleName === data[i].role_name) {
