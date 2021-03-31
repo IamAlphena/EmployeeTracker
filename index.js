@@ -33,6 +33,7 @@ async function init() {
             break
         case "Add Employee":
             //create new employee
+            addEmployee()
             break
         case "Add Department":
             //create new department
@@ -44,6 +45,7 @@ async function init() {
             break
         case "Update Employee":
             //update an existing employee
+            updateEmployee()
             break
         default:
             //when Exit is selected, exit program
@@ -51,58 +53,132 @@ async function init() {
     }
 }
 
-function viewEmployee (){
-    connection.query("SELECT * FROM employee LEFT JOIN employeerole ON  employee.role_id = employeerole.id LEFT JOIN department ON employeerole.department_id = department.id;", function(err,data){
+function viewEmployee() {
+    connection.query("SELECT first_name, last_name, manager_id, role_name, salary, dept_name FROM employee LEFT JOIN employeerole ON  employee.role_id = employeerole.id LEFT JOIN department ON employeerole.department_id = department.id;", function (err, data) {
         console.table(data);
         init()
     });
 }
 
-function viewDepartments (){
-    connection.query("SELECT * FROM department", function(err,data){
+function viewDepartments() {
+    connection.query("SELECT dept_name FROM department", function (err, data) {
         console.table(data);
         init()
     });
 }
 
-function viewRoles (){
-    connection.query("SELECT * FROM employeeroles", function(err,data){
+function viewRoles() {
+    connection.query("SELECT role_name, salary, dept_name FROM employeerole LEFT JOIN department ON employeerole.department_id = department.id ", function (err, data) {
         console.table(data);
         init()
     });
 }
 
-function addDepartment (){
+function addDepartment() {
     inquirer.prompt({
         name: "dept_name",
         type: "input",
         message: "What department would you like to add?"
     })
-    .then((data) => {
-        connection.query('INSERT INTO department SET ?', data)
-        init()
-    });
+        .then((data) => {
+            connection.query('INSERT INTO department SET ?', data)
+            init()
+        });
 }
 
 
-function addRole (){
+function addRole() {
     connection.query("SELECT * FROM department").then((data) => {
-        // console.log(data)
         const deptChoices = [];
-        data.forEach( choice => deptChoices.push(choice.dept_name))
-        console.log(deptChoices)
-    inquirer.prompt({
-        name: "dept_id",
-        type: "list",
-        message: "What department would you like to add this role to?",
-        choices: deptChoices
+        data.forEach(choice => deptChoices.push(choice.dept_name))
+        inquirer.prompt([
+            {
+                name: "role_name",
+                type: "input",
+                message: "What is the role you would like to add?"
+            },
+            {
+                name: "salary",
+                type: "input",
+                message: "What is the salary for this role?"
+            },
+            {
+                name: "deptName",
+                type: "list",
+                message: "What department would you like to add this role to?",
+                choices: deptChoices
+            }
+        ])
+        .then((answers)=>{ 
+            let dept_id = "";
+            for (i=0; i<data.length; i++){
+                if (answers.deptName === data[i].dept_name){
+                    dept_id = data[i].id
+                }    
+            }
+            connection.query('INSERT INTO employeerole SET ?', 
+            {
+                role_name: answers.role_name,
+                salary: answers.salary,
+                department_id: dept_id
+            })
+
+            init()
+        })
     })
- })
 }
 
-// function addEmployee(){
-//     inquirer.prompt([{
 
-//     }])
+function addEmployee (){
+    connection.query("SELECT * FROM employeerole").then((data) => {
+        const roleChoices = [];
+        data.forEach(choice => roleChoices.push(choice.role_name))
+        inquirer.prompt([
+            {
+                name: "first_name",
+                type: "input",
+                message: "What is the first name of your new employee?"
+            },
+            {
+                name: "last_name",
+                type: "input",
+                message: "What is the last name of your new employee?"
+            },
+            {
+                name: "roleName",
+                type: "list",
+                message: "What department would you like to add this role to?",
+                choices: roleChoices
+            },
+            {
+                name: "manager_id",
+                type: "input",
+                message: "What is their manager's ID number?"
+            }
+        ])
+        .then((answers)=>{ 
+            let role_id = "";
+            for (i=0; i<data.length; i++){
+                if (answers.roleName === data[i].role_name){
+                    role_id = data[i].id
+                }    
+            }
+            let manager_id = ''
+            if (answers.manager_id ===  ''){
+                manager_id = 0
+            } else {
+                manager_id = answers.manager_id
+            }
+            
+            connection.query('INSERT INTO employee SET ?', 
+            {
+                first_name: answers.first_name,
+                last_name: answers.last_name,
+                role_id: role_id,
+                manager_id: answers.manager_id
+            })
 
-// }
+            init()
+        })
+    })
+}
