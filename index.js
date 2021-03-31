@@ -86,7 +86,6 @@ function addDepartment() {
         });
 }
 
-
 function addRole() {
     connection.query("SELECT * FROM department").then((data) => {
         const deptChoices = [];
@@ -128,7 +127,6 @@ function addRole() {
     })
 }
 
-
 function addEmployee() {
     connection.query("SELECT * FROM employeerole").then((data) => {
         const roleChoices = [];
@@ -147,7 +145,7 @@ function addEmployee() {
             {
                 name: "roleName",
                 type: "list",
-                message: "What department would you like to add this role to?",
+                message: "What role would you like to add this employee to?",
                 choices: roleChoices
             },
             {
@@ -178,9 +176,50 @@ function addEmployee() {
                         role_id: role_id,
                         manager_id: manager_id
                     },
-                    )
+                )
 
                 init()
             })
     })
+}
+
+function updateEmployee() {
+    connection.query("SELECT * FROM employeerole").then((data) => {
+        const roleChoices = [];
+        data.forEach(choice => roleChoices.push(choice.role_name))
+        inquirer.prompt([
+            {
+                name: "first_name",
+                type: "input",
+                message: "What is the first name of the employee being updated?"
+            },
+            {
+                name: "roleName",
+                type: "list",
+                message: "What role would you like to change this employee to?",
+                choices: roleChoices
+            }
+        ])
+            .then((answers) => {
+                console.log(answers)
+                let role_id = "";
+                for (i = 0; i < data.length; i++) {
+                    if (answers.roleName === data[i].role_name) {
+                        role_id = data[i].id
+                    }
+                }
+
+                connection.query('UPDATE employee SET ? WHERE ?',
+                    [{
+                        role_id: role_id,
+                    },
+                    {
+                        first_name: answers.first_name
+                    }],
+                )
+
+                init()
+            })
+    })
+
 }
