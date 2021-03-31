@@ -109,27 +109,27 @@ function addRole() {
                 choices: deptChoices
             }
         ])
-        .then((answers)=>{ 
-            let dept_id = "";
-            for (i=0; i<data.length; i++){
-                if (answers.deptName === data[i].dept_name){
-                    dept_id = data[i].id
-                }    
-            }
-            connection.query('INSERT INTO employeerole SET ?', 
-            {
-                role_name: answers.role_name,
-                salary: answers.salary,
-                department_id: dept_id
-            })
+            .then((answers) => {
+                let dept_id = "";
+                for (i = 0; i < data.length; i++) {
+                    if (answers.deptName === data[i].dept_name) {
+                        dept_id = data[i].id
+                    }
+                }
+                connection.query('INSERT INTO employeerole SET ?',
+                    {
+                        role_name: answers.role_name,
+                        salary: answers.salary,
+                        department_id: dept_id
+                    })
 
-            init()
-        })
+                init()
+            })
     })
 }
 
 
-function addEmployee (){
+function addEmployee() {
     connection.query("SELECT * FROM employeerole").then((data) => {
         const roleChoices = [];
         data.forEach(choice => roleChoices.push(choice.role_name))
@@ -156,29 +156,31 @@ function addEmployee (){
                 message: "What is their manager's ID number?"
             }
         ])
-        .then((answers)=>{ 
-            let role_id = "";
-            for (i=0; i<data.length; i++){
-                if (answers.roleName === data[i].role_name){
-                    role_id = data[i].id
-                }    
-            }
-            let manager_id = ''
-            if (answers.manager_id ===  ''){
-                manager_id = 0
-            } else {
-                manager_id = answers.manager_id
-            }
-            
-            connection.query('INSERT INTO employee SET ?', 
-            {
-                first_name: answers.first_name,
-                last_name: answers.last_name,
-                role_id: role_id,
-                manager_id: answers.manager_id
-            })
+            .then((answers) => {
+                let role_id = "";
+                for (i = 0; i < data.length; i++) {
+                    if (answers.roleName === data[i].role_name) {
+                        role_id = data[i].id
+                    }
+                }
 
-            init()
-        })
+                let manager_id = "";
+                if (answers.manager_id === "") {
+                    manager_id = 0
+                } else {
+                    manager_id = answers.manager_id
+                }
+
+                connection.query('INSERT INTO employee SET ?',
+                    {
+                        first_name: answers.first_name,
+                        last_name: answers.last_name,
+                        role_id: role_id,
+                        manager_id: manager_id
+                    },
+                    )
+
+                init()
+            })
     })
 }
